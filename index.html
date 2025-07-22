@@ -7,37 +7,55 @@
     <!--Bootstrap css-->
     <link rel="stylesheet" href="bootstrap\bootstrap-4.6.1-dist\css\bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome CDN (version gratuite) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 </head>
 <body>
-   <div class="container mt-3 mt-lg-5 text-center">
-     <h1>Bienvenue sur notre plateforme</h1>
-    <!--Formulaire pour entrer les informations-->
-    <div class="row mb-4 mt-4">
-        <div class="col-6 mb-4 mt-4 d-flex align-items-center">
-            <img src="img.jpg" id="img_prin" class="img-fluid w-100" alt="Image illustrant l'agriculture">
-        </div>
-        <div class="col-6 mb-4 mt-4 d-flex align-items-center">
-            <label for="formFile" class="form-label">Choisissez une image de feuille de maïs ici:</label>
-            <input class="form-control" type="file" id="formFile">
-        </div>
-    </div>
+    <div class="container text-center mb-4 mt-4">
+    <h1 class="text-success">
+      <span class="title-icon"><i class="fa fa-leaf" aria-hidden="true"></i></span> Diagnostic des maladies du maïs
+    </h1>
+    <p><i class="fa fa-download" aria-hidden="true"></i> Chargez une image de feuille de maïs pour obtenir un diagnostic instantané</p>
+  </div>
 
+  <div class="container">
+    <div class="row g-4">
 
-    <!--le pied de la page-->
-    <div class="bg-light">
-        <div class="container">
-            <div class="row">
-                <footer class="col">
-                    <ul class="list-inline text-center">
-                        <li class="list-inline-item">&middot;</li>
-                        <li class="list-inline-item"><a href="#" class="primary-link">Copyright 2025</a></li>
-                        <li class="list-inline-item">&middot;</li>
-                    </ul>
-                </footer>
+      <!-- Bienvenue sur notre plateforme -->
+      <div class="col-md-6">
+        <div class="card border-success">
+          <div class="card-header bg-success text-white">
+                <i class="fa fa-leaf"></i> Bienvenue sur notre plateforme
+          </div>
+          <div class="card-body">
+            <img src="img.jpg" class="image-box mb-3" alt="Image illustrant l'agriculture">
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 d-flex">
+        <div class="card border-primary w-100"> <!-- w-100 pour prendre toute la largeur -->
+            <div class="upload-section">
+                <i class="fa fa-camera" aria-hidden="true"></i> Chargement de l'image
+            </div>
+        <div class="card-body d-flex flex-column"> <!-- flex-column pour aligner verticalement -->
+            <form class="flex-grow-1"> <!-- flex-grow-1 pour occuper l'espace disponible -->
+            <div class="mb-3 text-start">
+                <label for="formFile" class="form-label fw-bold">Sélectionnez une image :</label>
+                <input class="form-control" type="file" id="formFile">
+            </div>
+            <button type="submit" class="btn btn-warning w-100 fw-bold mt-2">Analyser l’image</button>
+            </form>
+            <div class="alert alert-success mt-2" role="alert">
+            💡 <strong>Conseil :</strong> Pour de meilleurs résultats, utilisez une image nette avec un fond clair.
             </div>
         </div>
     </div>
-    </div>
+</div>
+
+</div>
+</div>
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="bootstrap\bootstrap-4.6.1-dist\js\jquery.js"></script>
     <script src="bootstrap\bootstrap-4.6.1-dist\js\popper.js"></script>

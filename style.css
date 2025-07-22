@@ -1,5 +1,29 @@
-#img_prin{
-    height: 800px;
-    object-fit: cover;
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+body{
+  font-family: 'Poppins', sans-serif;
+}
+.title-icon {
+    font-size: 2rem;
+    color: green;
+    margin-right: 10px;
+    font-weight: 800;
+}
+.image-box {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
     opacity: 0.8;
+}
+.card-title {
+    font-weight: bold;
+}
+.upload-section {
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    border-radius: 5px 5px 0 0;
+}
+.card-body-yellow {
+    background-color: #ffc107;
+    color: black;
 }
