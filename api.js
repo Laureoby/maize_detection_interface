@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await fetch('http://127.0.0.1:8000/predict', {
                 method: 'POST',
                 body: formData
-            });
+            }); 
 
             if (!response.ok) {
                 throw new Error(`Erreur HTTP: ${response.status}`);
@@ -120,5 +120,111 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             resultContainer.innerHTML = content;
         }
+    }
+    function getRecommendation(disease) {
+        const defaultRecommendation = {
+            urgency: 'low',
+            measures: ['Aucune action immédiate requise'],
+            products: []
+        };
+    
+        const recommendations = {
+            'Healthy':{
+                urgency: 'low',
+                measures: ['Aucune action immédiate requise'],
+                products: []
+            },
+            'Blight': {
+                urgency: 'Elevée',
+                measures: [
+                    'Application immédiate de fongicide',
+                    'Rotation des cultures obligatoire',
+                    'Brûlage des plants infectés'
+                ],
+                products: ['Chlorothalonil 500SC', 'Amistar Xtra']
+            },
+            'Common_Rust': {  // Assurez-vous que le nom correspond à celui utilisé dans les prédictions
+                urgency: 'Moyenne',
+                measures: [
+                    'Pulvérisation de bicarbonate',
+                    'Élimination des résidus',
+                    'Réduction de l\'humidité'
+                ],
+                products: ['Soufre micronisé', 'Bouillie bordelaise']
+            },
+            // ... autres maladies
+        };
+    
+        return recommendations[disease] || defaultRecommendation;
+    }
+
+    function displayResults(data) {
+        const prediction = data.predictions[0];
+        const confidencePercent = (prediction.confidence * 100).toFixed(2);
+        let statusClass, statusIcon;
+        
+        if (prediction.class_name.toLowerCase() === 'healthy') {
+            statusClass = 'success';
+            statusIcon = 'check-circle';
+        } else {
+            statusClass = 'danger';
+            statusIcon = 'exclamation-triangle';
+        }
+        
+        const resultHTML = `
+            <div class="card diagnosis-card">
+                <div class="card-body">
+                    <h4 class="card-title"><i class="fas fa-diagnosis"></i> Résultats du diagnostic</h4>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>État :</strong></p>
+                            <span class="badge badge-${statusClass} p-2">
+                                <i class="fas fa-${statusIcon}"></i> ${prediction.class_name}
+                            </span>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Confiance :</strong></p>
+                            <div class="progress">
+                                <div class="progress-bar bg-${statusClass}" 
+                                     role="progressbar" 
+                                     style="width: ${confidencePercent}%" 
+                                     aria-valuenow="${confidencePercent}" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="100">
+                                    ${confidencePercent}%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <p><strong>Fichier analysé :</strong> ${prediction.filename}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        showResult(resultHTML);
+    
+        // Appeler la fonction pour afficher les recommandations
+        displayRecommendations(prediction.class_name);
+    }
+    
+    function displayRecommendations(disease) {
+        const recommendations = getRecommendation(disease);
+        const recommendationContainer = document.getElementById('recommendationContainer');
+        const recommendationContent = document.getElementById('recommendationContent');
+    
+        recommendationContent.innerHTML = `
+            <p><strong>Urgence :</strong> ${recommendations.urgency}</p>
+            <p><strong>Mesures recommandées :</strong></p>
+            <ul>
+                ${recommendations.measures.map(measure => `<li>${measure}</li>`).join('')}
+            </ul>
+            <p><strong>Produits recommandés :</strong> ${recommendations.products.join(', ')}</p>
+        `;
+    
+        // Afficher la section des recommandations
+        recommendationContainer.style.display = 'block';
     }
 });
