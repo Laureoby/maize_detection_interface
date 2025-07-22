@@ -8,6 +8,12 @@ body{
     margin-right: 10px;
     font-weight: 800;
 }
+
+.card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
 .image-box {
     max-width: 100%;
     height: auto;
@@ -26,4 +32,15 @@ body{
 .card-body-yellow {
     background-color: #ffc107;
     color: black;
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.preview-image {
+    max-height: 300px;
+    display: none;
+    margin: 0 auto;
+    border-radius: 5px;
 }
