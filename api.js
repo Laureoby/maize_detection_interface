@@ -64,56 +64,6 @@ document.addEventListener('DOMContentLoaded', function() {
             analyzeBtn.disabled = false;
         }
     });
-
-    function displayResults(data) {
-        const prediction = data.predictions[0];
-        const confidencePercent = (prediction.confidence * 100).toFixed(2);
-        let statusClass, statusIcon;
-        
-        if (prediction.class_name.toLowerCase() === 'healthy') {
-            statusClass = 'success';
-            statusIcon = 'check-circle';
-        } else {
-            statusClass = 'danger';
-            statusIcon = 'exclamation-triangle';
-        }
-        
-        const resultHTML = `
-            <div class="card diagnosis-card">
-                <div class="card-body">
-                    <h4 class="card-title"><i class="fas fa-diagnosis"></i> Résultats du diagnostic</h4>
-                    <hr>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p><strong>État :</strong></p>
-                            <span class="badge badge-${statusClass} p-2">
-                                <i class="fas fa-${statusIcon}"></i> ${prediction.class_name}
-                            </span>
-                        </div>
-                        <div class="col-md-6">
-                            <p><strong>Confiance :</strong></p>
-                            <div class="progress">
-                                <div class="progress-bar bg-${statusClass}" 
-                                     role="progressbar" 
-                                     style="width: ${confidencePercent}%" 
-                                     aria-valuenow="${confidencePercent}" 
-                                     aria-valuemin="0" 
-                                     aria-valuemax="100">
-                                    ${confidencePercent}%
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <p><strong>Fichier analysé :</strong> ${prediction.filename}</p>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        showResult(resultHTML);
-    }
-
     function showResult(content, type) {
         if (type) {
             resultContainer.innerHTML = `<div class="alert alert-${type}">${content}</div>`;
@@ -121,6 +71,18 @@ document.addEventListener('DOMContentLoaded', function() {
             resultContainer.innerHTML = content;
         }
     }
+
+    function getDiseaseDescription(disease) {
+        const descriptions = {
+            'Healthy': "Votre plant de maïs est en excellente santé. Continuez une bonne gestion pour prévenir l'apparition de maladies.",
+            'Blight': "Maladie souvent causée par des bactéries ou champignons (par ex. Exserohilum turcicum pour la brûlure du nord du maïs) qui se manifeste par taches allongées brun-gris, souvent entourées d’un halo jaune. Les feuilles peuvent se dessécher prématurément, réduisant la photosynthèse.",
+            'Common_Rust': "La rouille commune du maïs est une maladie fongique  causée par Puccinia sorghi, qui se reconnaît à la présence de petites pustules brun-orangé sur les feuilles. Ces pustules libèrent des spores qui peuvent infecter d'autres plants. Si l'infection est grave, elle peut affaiblir la plante et affecter la production de grains.",
+            'Gray_Leaf_Spot':"Maladie causée par Cercospora zeae-maydis identifiable par des lésions rectangulaires allongées, de couleur gris-brun, souvent parallèles aux nervures de la feuille. Elle réduit fortement le rendement si non contrôlé.",
+        };
+    
+        return descriptions[disease] || "Aucune description détaillée n'est disponible pour cette condition.";
+    }
+
     function getRecommendation(disease) {
         const defaultRecommendation = {
             urgency: 'Basse',
@@ -138,20 +100,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 urgency: 'Élevée',
                 measures: [
                     'Éliminer et brûler immédiatement les plants infectés pour empêcher la propagation.',
-                    'Utiliser des fongicides à base de mancozèbe ou de chlorothalonil en respectant les doses recommandées.',
+                    'Utiliser un fongicide recommandé (à base de strobilurines ou triazoles) si l’infestation est avancée en respectant les doses recommandées.',
                     'Pour la saison suivante, opter pour la rotation des cultures avec des plantes non hôtes du champignon (haricots, manioc, etc.).',
                     'Améliorer la circulation de l\'air en espaçant mieux les plants.'
                 ],
                 products: [
-                    { name: 'Mancozèbe (poudre)', description: 'Fongicide de contact très efficace, à pulvériser sur les feuilles.' },
-                    { name: 'Bouillie Bordelaise (cuivre)', description: 'Solution naturelle, efficace en prévention et début d’infection. Appliquer en pulvérisation.' }
+                    { name: 'strobilurines', description: 'Les strobilurines sont des fongicides à action préventive et partiellement curative. Leur mode d\'action est très ciblé.' },
+                    { name: 'triazoles', description: 'Les triazoles sont principalement des fongicides à action curative et préventive. Ils sont particulièrement efficaces lorsque l\'infection a déjà commencé.' }
                 ]
             },
-            'Common_Rust': {
+            'Gray_Leaf_Spot': {
                 urgency: 'Moyenne',
                 measures: [
+                'Appliquer un fongicide préventif ou dès les premiers signes, surtout avant la floraison.',
+                'Éliminer les résidus de culture qui peuvent contenir le champignon.'
+                ],
+                products: [
+                        { name: 'strobilurines', description: 'Les strobilurines sont des fongicides à action préventive et partiellement curative. Leur mode d\'action est très ciblé.' },
+                        { name: 'triazoles', description: 'Les triazoles sont principalement des fongicides à action curative et préventive. Ils sont particulièrement efficaces lorsque l\'infection a déjà commencé.' }
+                ]
+            },
+            'Common_Rust':{
+                urgency: 'Moyenne',
+                measures: [
+                    'Si la présence est faible, aucune action immédiate n\'est nécessaire, car la rouille commune peut disparaître avec la chaleur.',
                     'Retirer et détruire les feuilles les plus atteintes pour réduire la source d\'infection.',
-                    'Appliquer un fongicide à base de soufre ou de cuivre dès les premiers signes.',
+                    'Pour une attaque sévère, appliquez un fongicide approprié (ex. à base d’azoxystrobine).',
                     'Éviter l\'irrigation par aspersion, car l\'eau favorise la germination des spores du champignon.',
                     'Réduire l\'humidité dans le champ en désherbant et en assurant une bonne aération.'
                 ],
@@ -159,7 +133,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     { name: 'Soufre micronisé', description: 'Fongicide naturel, utilisé en pulvérisation foliaire. Efficace en début d\'infection.' },
                     { name: 'Bouillie Bordelaise (cuivre)', description: 'Fongicide à large spectre, utile en prévention et traitement précoce.' }
                 ]
-            },
+            }
         };
     
         return recommendations[disease] || defaultRecommendation;
@@ -168,8 +142,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function displayResults(data) {
         const prediction = data.predictions[0];
         const confidencePercent = (prediction.confidence * 100).toFixed(2);
+        const diseaseDescription = getDiseaseDescription(prediction.class_name);
         let statusClass, statusIcon;
-        
+    
         if (prediction.class_name.toLowerCase() === 'healthy') {
             statusClass = 'success';
             statusIcon = 'check-circle';
@@ -177,22 +152,23 @@ document.addEventListener('DOMContentLoaded', function() {
             statusClass = 'danger';
             statusIcon = 'exclamation-triangle';
         }
-        
+    
         const resultHTML = `
-            <div class="card diagnosis-card">
+            <div class="card diagnosis-card mt-4">
                 <div class="card-body">
-                    <h4 class="card-title"><i class="fas fa-diagnosis"></i> Résultats du diagnostic</h4>
+                    <h4 class="card-title text-center mb-4"><i class="fas fa-microscope text-warning"></i> Résultats du Diagnostic</h4>
                     <hr>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p><strong>État :</strong></p>
-                            <span class="badge badge-${statusClass} p-2">
-                                <i class="fas fa-${statusIcon}"></i> ${prediction.class_name}
-                            </span>
-                        </div>
-                        <div class="col-md-6">
-                            <p><strong>Confiance :</strong></p>
-                            <div class="progress">
+                    
+                    <div class="text-center mb-4">
+                        <span class="badge badge-${statusClass} p-3 large-badge">
+                            <i class="fas fa-${statusIcon}"></i> ${prediction.class_name}
+                        </span>
+                    </div>
+    
+                    <div class="row text-center mt-3">
+                        <div class="col-md-6 mb-3">
+                            <p><strong>Niveau de Confiance :</strong></p>
+                            <div class="progress" style="height: 25px;">
                                 <div class="progress-bar bg-${statusClass}" 
                                      role="progressbar" 
                                      style="width: ${confidencePercent}%" 
@@ -203,20 +179,27 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                             </div>
                         </div>
+                        <div class="col-md-6 mb-3">
+                            <p><strong>Fichier Analysé :</strong></p>
+                            <p class="filename-text">${prediction.filename}</p>
+                        </div>
                     </div>
-                    <div class="mt-3">
-                        <p><strong>Fichier analysé :</strong> ${prediction.filename}</p>
+                    
+                    <hr>
+    
+                    <div class="disease-description-section mt-4">
+                        <h5 class="text-center"><i class="fas fa-info-circle text-info"></i> À propos de la maladie</h5>
+                        <p class="text-justify">${diseaseDescription}</p>
                     </div>
+    
                 </div>
             </div>
         `;
-        
-        showResult(resultHTML);
     
-        // Appeler la fonction pour afficher les recommandations
+        showResult(resultHTML);
         displayRecommendations(prediction.class_name);
     }
-    
+
     function displayRecommendations(disease) {
         const recommendations = getRecommendation(disease);
         const recommendationContainer = document.getElementById('recommendationContainer');
