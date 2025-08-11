@@ -123,36 +123,43 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     function getRecommendation(disease) {
         const defaultRecommendation = {
-            urgency: 'low',
-            measures: ['Aucune action immédiate requise'],
+            urgency: 'Basse',
+            measures: ['Continuer de surveiller les plants régulièrement pour prévenir l\'apparition de maladies.'],
             products: []
         };
     
         const recommendations = {
-            'Healthy':{
-                urgency: 'low',
-                measures: ['Aucune action immédiate requise'],
+            'Healthy': {
+                urgency: 'Basse',
+                measures: ['Continuer de surveiller les plants régulièrement pour prévenir l\'apparition de maladies.'],
                 products: []
             },
             'Blight': {
-                urgency: 'Elevée',
+                urgency: 'Élevée',
                 measures: [
-                    'Application immédiate de fongicide',
-                    'Rotation des cultures obligatoire',
-                    'Brûlage des plants infectés'
+                    'Éliminer et brûler immédiatement les plants infectés pour empêcher la propagation.',
+                    'Utiliser des fongicides à base de mancozèbe ou de chlorothalonil en respectant les doses recommandées.',
+                    'Pour la saison suivante, opter pour la rotation des cultures avec des plantes non hôtes du champignon (haricots, manioc, etc.).',
+                    'Améliorer la circulation de l\'air en espaçant mieux les plants.'
                 ],
-                products: ['Chlorothalonil 500SC', 'Amistar Xtra']
+                products: [
+                    { name: 'Mancozèbe (poudre)', description: 'Fongicide de contact très efficace, à pulvériser sur les feuilles.' },
+                    { name: 'Bouillie Bordelaise (cuivre)', description: 'Solution naturelle, efficace en prévention et début d’infection. Appliquer en pulvérisation.' }
+                ]
             },
-            'Common_Rust': {  // Assurez-vous que le nom correspond à celui utilisé dans les prédictions
+            'Common_Rust': {
                 urgency: 'Moyenne',
                 measures: [
-                    'Pulvérisation de bicarbonate',
-                    'Élimination des résidus',
-                    'Réduction de l\'humidité'
+                    'Retirer et détruire les feuilles les plus atteintes pour réduire la source d\'infection.',
+                    'Appliquer un fongicide à base de soufre ou de cuivre dès les premiers signes.',
+                    'Éviter l\'irrigation par aspersion, car l\'eau favorise la germination des spores du champignon.',
+                    'Réduire l\'humidité dans le champ en désherbant et en assurant une bonne aération.'
                 ],
-                products: ['Soufre micronisé', 'Bouillie bordelaise']
+                products: [
+                    { name: 'Soufre micronisé', description: 'Fongicide naturel, utilisé en pulvérisation foliaire. Efficace en début d\'infection.' },
+                    { name: 'Bouillie Bordelaise (cuivre)', description: 'Fongicide à large spectre, utile en prévention et traitement précoce.' }
+                ]
             },
-            // ... autres maladies
         };
     
         return recommendations[disease] || defaultRecommendation;
@@ -215,16 +222,50 @@ document.addEventListener('DOMContentLoaded', function() {
         const recommendationContainer = document.getElementById('recommendationContainer');
         const recommendationContent = document.getElementById('recommendationContent');
     
+        const productList = recommendations.products.length > 0
+            ? recommendations.products.map(product => `<li><strong>${product.name}</strong>: ${product.description}</li>`).join('')
+            : '<li>Aucun produit spécifique recommandé pour l\'instant.</li>';
+    
         recommendationContent.innerHTML = `
-            <p><strong>Urgence :</strong> ${recommendations.urgency}</p>
-            <p><strong>Mesures recommandées :</strong></p>
-            <ul>
-                ${recommendations.measures.map(measure => `<li>${measure}</li>`).join('')}
-            </ul>
-            <p><strong>Produits recommandés :</strong> ${recommendations.products.join(', ')}</p>
+            <div class="card recommendation-card mt-4">
+                <div class="card-body">
+                    <h4 class="card-title text-center mb-4"><i class="fas fa-hand-holding-heart text-success"></i> Recommandations et plan d'action</h4>
+                    
+                    <div class="alert alert-warning text-center" role="alert">
+                        <h5 class="alert-heading"><i class="fas fa-exclamation-triangle"></i> Niveau d'Urgence : <span class="font-weight-bold">${recommendations.urgency}</span></h5>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="recommendation-section">
+                                <h6><i class="fas fa-tasks text-primary"></i> Mesures de Contrôle Immédiates</h6>
+                                <ul>
+                                    ${recommendations.measures.map(measure => `<li>${measure}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="recommendation-section">
+                                <h6><i class="fas fa-spray-can text-success"></i> Produits de Traitement Suggérés</h6>
+                                <ul class="list-unstyled">
+                                    ${productList}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="recommendation-section">
+                        <h6><i class="fas fa-shield-alt text-info"></i> Conseils de Sécurité et Prévention</h6>
+                        <p><strong>Porter des équipements de protection</strong> : Toujours utiliser des gants, un masque et des lunettes de protection lors de la manipulation de produits chimiques.</p>
+                        <p><strong>Suivre les dosages</strong> : Respecter strictement les instructions et les dosages indiqués sur l'emballage des produits pour garantir l'efficacité et la sécurité.</p>
+                        <p><strong>Stockage</strong> : Conserver les produits chimiques hors de portée des enfants et des animaux, dans un endroit frais et sec.</p>
+                    </div>
+                </div>
+            </div>
         `;
     
-        // Afficher la section des recommandations
         recommendationContainer.style.display = 'block';
     }
 });
