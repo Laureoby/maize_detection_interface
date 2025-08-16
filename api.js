@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showResult('<div class="text-center"><i class="fas fa-spinner fa-spin fa-2x"></i><p class="mt-2">Analyse de l\'image en cours...</p></div>', 'info');
 
             // Requete a L'API
-            const response = await fetch('http://127.0.0.1:8000/predict', {
+            const response = await fetch('https://d39508c3-8000.uks1.devtunnels.ms/predict', {
                 method: 'POST',
                 body: formData
             }); 
